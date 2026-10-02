@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 import os
 
+# === CHỈ KHAI BÁO Ở ĐÂY ===
 db = SQLAlchemy()
 
 def create_app():
@@ -12,9 +13,7 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///hoso.db")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
-    # Lưu ID thư mục Drive vào cấu hình ứng dụng
-    app.config['DRIVE_FOLDER_ID'] = "13hI5NX2UfQqINJNuXJFGPsUrvRXSzA7O"
-    
+    # Gọi init_app ĐÚNG CÁCH
     db.init_app(app)
     
     login_manager = LoginManager()
@@ -37,9 +36,7 @@ def create_app():
             )
             db.session.add(admin)
             db.session.commit()
-            print("✅ Tạo tài khoản admin thành công")
     
-    # Đăng ký route
     from app.routes import main_bp
     app.register_blueprint(main_bp)
     
