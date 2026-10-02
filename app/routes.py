@@ -18,7 +18,7 @@ def index():
 @main_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        user = User.query.filter_by(username=request.form.get('username')).first()
+        user = User.query.filter_by(username=request.form.get('username')).strip() == request.form.get('username'):
         if user and user.check_password(request.form.get('password')):
             login_user(user)
             return redirect(url_for('main.dashboard'))
