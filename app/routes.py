@@ -5,6 +5,7 @@ from app.models import User
 
 main_bp = Blueprint('main', __name__)
 
+# Đặt ID đúng từ thư mục của bạn
 DRIVE_FOLDER_ID = "13hI5NX2UfQqINJNuXJFGPsUrvRXSzA7O"
 
 @main_bp.route('/')
