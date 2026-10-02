@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Trang Quản lý - Hệ thống Hồ sơ</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 30px auto; padding: 0 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .user { color: #666; }
+        .btn { display: inline-block; padding: 10px 20px; background: #4285f4; color: white; 
+               text-decoration: none; border-radius: 5px; margin: 5px; }
+        .btn-drive { background: #34a853; }
+        .btn-logout { background: #ea4335; }
+        .card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Trang Quản lý Hồ sơ</h1>
+        <div>
+            <span class="user">Xin chào, <strong>{{ user.full_name }}</strong></span>
+            <a href="{{ url_for('main.logout') }}" class="btn btn-logout">Đăng xuất</a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3>📂 Thư mục Dữ liệu</h3>
+        <p>Tất cả hồ sơ, chứng chỉ, tệp đính kèm được lưu trữ an toàn trên Google Drive.</p>
+        <a href="{{ drive_link }}" class="btn btn-drive" target="_blank">Mở Thư mục HSCM_TIEU_HOC</a>
+    </div>
+    
+    <div class="card">
+        <h3>📋 Chức năng chính</h3>
+        <ul>
+            <li>Quản lý danh sách cán bộ/giáo viên</li>
+            <li>Lưu trữ hồ sơ, bằng cấp, chứng chỉ</li>
+            <li>Tìm kiếm và xuất báo cáo</li>
+        </ul>
+    </div>
+</body>
+</html>

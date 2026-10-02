@@ -8,28 +8,39 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
     
-    # Cấu hình
-    app.config['SECRET_KEY'] = 'thay_bang_khoa_bao_mat_cua_ban'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hoso.db'
+    app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", "dev-key-thay-doi-sau")
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///hoso.db")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
-    # Khởi tạo CSDL
+    # Lưu ID thư mục Drive vào cấu hình ứng dụng
+    app.config['DRIVE_FOLDER_ID'] = "13hI5NX2UfQqINJNuXJFGPsUrvRXSzA7O"
+    
     db.init_app(app)
     
-    # Quản lý đăng nhập
     login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = 'main.login'
     login_manager.init_app(app)
     
-    # Tải mô hình & tạo bảng
     from app.models import User
+    
     with app.app_context():
         db.create_all()
+        # Tạo tài khoản admin nếu chưa có
+        if not User.query.filter_by(username='admin').first():
+            from werkzeug.security import generate_password_hash
+            admin = User(
+                username='admin',
+                password=generate_password_hash('Admin@123', method='pbkdf2:sha256'),
+                full_name='Quản trị viên Hệ thống',
+                email='hoso.thlq@gmail.com',
+                role='admin'
+            )
+            db.session.add(admin)
+            db.session.commit()
+            print("✅ Tạo tài khoản admin thành công")
     
     # Đăng ký route
     from app.routes import main_bp
-    from app.auth import auth_bp
     app.register_blueprint(main_bp)
-    app.register_blueprint(auth_bp)
     
     return app
