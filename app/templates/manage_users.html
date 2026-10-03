@@ -13,7 +13,6 @@
         .btn-primary { background: #1a73e8; color: white; }
         .btn-success { background: #137333; color: white; }
         .btn-warning { background: #fbbc04; color: #202124; }
-        .btn-danger { background: #d93025; color: white; }
         .btn-secondary { background: #e8eaed; color: #5f6368; }
         .flash { padding: 12px; border-radius: 8px; margin-bottom: 20px; }
         .flash-success { background: #e6f4ea; color: #137333; }
@@ -30,6 +29,14 @@
     </style>
 </head>
 <body>
+    {% with messages = get_flashed_messages(with_categories=false) %}
+    {% if messages %}
+        {% for msg in messages %}
+        <div class="flash flash-success">{{ msg }}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
     <div class="header">
         <h1>👥 Quản lý người dùng</h1>
         <div>
@@ -37,14 +44,7 @@
             <a href="{{ url_for('main.create_user') }}" class="btn btn-success">+ Tạo tài khoản</a>
         </div>
     </div>
-    
-    {% with messages = get_flashed_messages(with_categories=false) %}
-    {% if messages %}
-        {% for msg in messages %}
-        <div class="flash flash-success">{{ msg }}</div>
-        {% endfor %}
-    {% endif %}
-    
+
     <table>
         <thead>
             <tr>
