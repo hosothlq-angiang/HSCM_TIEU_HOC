@@ -8,18 +8,32 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
     
+    # Cấu hình
     app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", "khoa_bao_mat_an_toan_2026")
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:////tmp/hoso_dulieu.db")
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+        "DATABASE_URL", 
+        "sqlite:////tmp/hoso_dulieu.db"
+    )
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    # Kết nối CSDL
     db.init_app(app)
 
+    # Cấu hình Đăng nhập
     login_manager = LoginManager()
     login_manager.login_view = 'main.login'
+    
+    # ========== ĐÂY LÀ ĐOẠN THIẾU GÂY LỖI ==========
+    from app.models import User
+    
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+    # ==============================================
+    
     login_manager.init_app(app)
 
-    from app.models import User
-
+    # Tạo bảng & tài khoản admin
     with app.app_context():
         db.create_all()
         
@@ -28,7 +42,10 @@ def create_app():
             try:
                 admin = User(
                     username='admin',
-                    password_hash=generate_password_hash('Admin@123', method='pbkdf2:sha256'),
+                    password_hash=generate_password_hash(
+                        'Admin@123', 
+                        method='pbkdf2:sha256'
+                    ),
                     full_name='Quản trị viên Hệ thống',
                     email='admin@hscm-tieu-hoc.vn',
                     role='admin'
@@ -40,8 +57,9 @@ def create_app():
                 print(f"⚠️ Lỗi tạo admin: {e}")
                 db.session.rollback()
         else:
-            print("✅ Tài khoản admin đã tồn tại")
+            print("✅ Tài khoản admin đã sẵn sàng")
 
+    # Đăng ký đường dẫn
     from app.routes import main_bp
     app.register_blueprint(main_bp)
 
