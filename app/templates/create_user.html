@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo tài khoản giáo viên - Hệ thống Hồ sơ</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background: #f0f4f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        h2 { text-align: center; color: #137333; margin-bottom: 25px; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; color: #333; }
+        input { width: 100%; padding: 11px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; }
+        input:focus { outline: none; border-color: #1a73e8; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+        .btn-primary { background: #137333; color: white; }
+        .btn-secondary { background: #e8eaed; color: #5f6368; text-decoration: none; text-align: center; display: block; }
+        .hint { font-size: 13px; color: #5f6368; margin-top: 4px; }
+        .flash { padding: 10px; border-radius: 6px; margin-bottom: 15px; }
+        .flash-error { background: #fce8e6; color: #d93025; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>➕ Tạo tài khoản giáo viên</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=false) %}
+        {% if messages %}
+            {% for msg in messages %}
+            <div class="flash flash-error">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+        
+        <form method="POST">
+            <div class="form-group">
+                <label>Tên đăng nhập *</label>
+                <input type="text" name="username" required placeholder="vd: nguyenvana">
+            </div>
+            
+            <div class="form-group">
+                <label>Họ và tên *</label>
+                <input type="text" name="full_name" required placeholder="Nguyễn Văn A">
+            </div>
+            
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" name="email" required placeholder="nguyenvana@gmail.com">
+            </div>
+            
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                <input type="tel" name="phone" placeholder="09xxxxxxxxx">
+                <div class="hint">Để gửi thông báo sau này</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Mật khẩu ban đầu *</label>
+                <input type="password" name="password" required placeholder="Ít nhất 8 ký tự">
+                <div class="hint">Giáo viên sẽ bắt buộc đổi mật khẩu khi đăng nhập lần đầu</div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Tạo tài khoản</button>
+            <a href="{{ url_for('main.manage_users') }}" class="btn btn-secondary">Quay lại</a>
+        </form>
+    </div>
+</body>
+</html>
