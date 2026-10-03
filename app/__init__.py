@@ -50,7 +50,7 @@ def create_app():
                 full_name='Quản trị viên Hệ thống',
                 email='admin@hscm-tieu-hoc.vn',
                 phone='',
-                role='admin',
+                role_type='admin',
                 must_change_password=False,
                 is_active=True
             )

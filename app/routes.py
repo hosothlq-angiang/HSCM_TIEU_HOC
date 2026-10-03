@@ -130,7 +130,10 @@ def create_user():
             full_name=full_name,
             email=email,
             phone=phone,
-            role='giaovien',
+            staff_code=staff_code,
+            class_room=class_room,
+            grade_level=grade_level,
+            role_type=role_type,          # ✅ Đảm bảo dùng role_type
             must_change_password=True  # Bắt buộc đổi mật khẩu lần đầu
         )
         new_user.set_password(password)
