@@ -6,7 +6,7 @@
     <title>Quản lý người dùng - Hệ thống Hồ sơ</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-        body { background: #f8f9fa; padding: 30px; max-width: 1100px; margin: 0 auto; }
+        body { background: #f8f9fa; padding: 30px; max-width: 1200px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
         h1 { color: #202124; font-size: 22px; }
         .btn { padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; font-size: 14px; }
@@ -17,7 +17,7 @@
         .flash { padding: 12px; border-radius: 8px; margin-bottom: 20px; }
         .flash-success { background: #e6f4ea; color: #137333; }
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        th, td { padding: 14px; text-align: left; border-bottom: 1px solid #eee; }
+        th, td { padding: 14px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
         th { background: #f8f9fa; font-weight: bold; color: #5f6368; font-size: 13px; text-transform: uppercase; }
         .role-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
         .role-admin { background: #e8f0fe; color: #1a73e8; }
@@ -51,6 +51,7 @@
                 <th>Tên đăng nhập</th>
                 <th>Họ và tên</th>
                 <th>Email</th>
+                <th>Số điện thoại</th>
                 <th>Vai trò</th>
                 <th>Trạng thái</th>
                 <th>Hành động</th>
@@ -62,6 +63,7 @@
                 <td><strong>{{ u.username }}</strong></td>
                 <td>{{ u.full_name }}</td>
                 <td>{{ u.email }}</td>
+                <td>{{ u.phone if u.phone else '—' }}</td>
                 <td>
                     <span class="role-badge {% if u.role == 'admin' %}role-admin{% else %}role-giaovien{% endif %}">
                         {{ 'Quản trị' if u.role == 'admin' else 'Giáo viên' }}
