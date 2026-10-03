@@ -3,179 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Quản lý - Hệ thống Hồ sơ</title>
+    <title>Trang Quản lý Hồ sơ</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-        body {
-            background: #f8f9fa;
-            padding: 30px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .header-left h1 {
-            font-size: 22px;
-            color: #202124;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .user-name {
-            color: #5f6368;
-            font-size: 15px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.2s;
-        }
-        .btn-drive {
-            background: #34a853;
-            color: white;
-        }
-        .btn-drive:hover {
-            background: #2d9449;
-        }
-        .btn-logout {
-            background: #ea4335;
-            color: white;
-        }
-        .btn-logout:hover {
-            background: #d33426;
-        }
-        .btn-secondary {
-            background: #e8eaed;
-            color: #5f6368;
-        }
-        .btn-secondary:hover {
-            background: #dadce0;
-        }
-        .btn-admin {
-            background: #1a73e8;
-            color: white;
-        }
-        .btn-admin:hover {
-            background: #1557b0;
-        }
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-        .card h3 {
-            margin-bottom: 15px;
-            color: #202124;
-            font-size: 17px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .card p {
-            color: #5f6368;
-            margin-bottom: 15px;
-            line-height: 1.6;
-        }
-        ul {
-            margin-left: 20px;
-            color: #5f6368;
-        }
-        li {
-            margin: 10px 0;
-            line-height: 1.6;
-        }
-        li a {
-            color: #1a73e8;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        li a:hover {
-            text-decoration: underline;
-        }
-        .flash {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .flash-success {
-            background: #e6f4ea;
-            color: #137333;
-            border-left: 4px solid #137333;
-        }
+        body { background: #f8f9fa; padding: 25px; max-width: 900px; margin: 0 auto; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+        .user-info { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .tag { padding: 4px 12px; border-radius: 14px; font-size: 13px; font-weight: bold; }
+        .tag-admin { background: #e8f0fe; color: #1a73e8; }
+        .tag-khoi { background: #fce8e6; color: #d93025; }
+        .tag-giaovien { background: #e6f4ea; color: #137333; }
+        .btn-logout { background: #d93025; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; }
+        .card { background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        .card h3 { color: #202124; margin-bottom: 12px; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+        .card p { color: #5f6368; margin-bottom: 15px; font-size: 15px; line-height: 1.6; }
+        .btn { padding: 11px 22px; border-radius: 8px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; font-size: 15px; display: inline-block; margin: 4px 4px 4px 0; }
+        .btn-primary { background: #1a73e8; color: white; }
+        .btn-success { background: #137333; color: white; }
+        .btn-secondary { background: #e8eaed; color: #5f6368; }
+        .btn-sm { padding: 7px 14px; font-size: 14px; }
+        .folder-list { margin-top: 20px; }
+        .folder-item { padding: 14px 16px; background: #f1f3f4; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .folder-owner { border-left: 4px solid #137333; background: #e6f4ea; }
+        .flash { padding: 14px 20px; border-radius: 8px; margin-bottom: 20px; line-height: 1.6; }
+        .flash-info { background: #e8f0fe; color: #1a73e8; border-left: 4px solid #1a73e8; }
+        .flash-warning { background: #fef7e0; color: #f9ab00; border-left: 4px solid #f9ab00; }
+        .empty-state { padding: 25px; text-align: center; color: #5f6368; }
+        .empty-state p { margin: 8px 0; }
     </style>
 </head>
 <body>
-    {% with messages = get_flashed_messages(with_categories=false) %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-        {% for msg in messages %}
-        <div class="flash flash-success">{{ msg }}</div>
+        {% for category, msg in messages %}
+        <div class="flash flash-{{ category }}">{{ msg|safe }}</div>
         {% endfor %}
     {% endif %}
     {% endwith %}
 
-    <div class="header">
-        <div class="header-left">
-            <h1>📊 Trang Quản lý Hồ sơ</h1>
+    <div class="top-bar">
+        <h2>📊 Trang Quản lý Hồ sơ</h2>
+        <div class="user-info">
+            <span>Xin chào, <strong>{{ user.full_name }}</strong></span>
+            {% if user.is_admin() %}<span class="tag tag-admin">Quản trị</span>{% endif %}
+            {% if user.is_khoitruong() %}<span class="tag tag-khoi">Khối trưởng</span>{% endif %}
+            {% if user.grade_level %}<span class="tag tag-giaovien">{{ user.grade_level }}</span>{% endif %}
+            <a href="{{ url_for('main.logout') }}" class="btn-logout">Đăng xuất</a>
         </div>
-        <div class="header-right">
-            <span class="user-name">
-                Xin chào, <strong>{{ user.full_name if user.full_name else user.username }}</strong>
-                {% if user.is_admin() %}<span style="color:#1a73e8; font-size:12px; background:#e8f0fe; padding:2px 8px; border-radius:10px; margin-left:6px;">Admin</span>{% endif %}
-            </span>
-            <a href="{{ url_for('main.logout') }}" class="btn btn-logout">Đăng xuất</a>
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>📂 Thư mục Dữ liệu</h3>
-        <p>Tất cả hồ sơ, chứng chỉ, tệp đính kèm được lưu trữ an toàn trên Google Drive.</p>
-        <a href="{{ drive_link }}" class="btn btn-drive" target="_blank">📁 Mở Thư mục HSCM_TIEU_HOC</a>
     </div>
 
     {% if user.is_admin() %}
+    <!-- ========== ADMIN ========== -->
+    <div class="card">
+        <h3>📁 Thư mục Dữ liệu — Toàn trường</h3>
+        <p>Quản lý tất cả khối và giáo viên trong trường</p>
+        <a href="{{ config.DRIVE_ROOT_URL }}" target="_blank" class="btn btn-success">📂 Mở thư mục HSCM_TIEU_HOC</a>
+    </div>
+
     <div class="card">
         <h3>⚙️ Quản trị Hệ thống</h3>
-        <p>Chức năng dành cho người quản lý hệ thống</p>
-        <a href="{{ url_for('main.manage_users') }}" class="btn btn-admin">👥 Quản lý tài khoản người dùng</a>
+        <p>Chức năng dành cho quản trị viên</p>
+        <a href="{{ url_for('main.manage_users') }}" class="btn btn-secondary">👥 Quản lý tài khoản người dùng</a>
+    </div>
+    {% else %}
+    <!-- ========== GIÁO VIÊN / KHỐI TRƯỞNG ========== -->
+    <div class="card">
+        <h3>📁 Thư mục Dữ liệu — {{ user.grade_level or 'Chưa phân khối' }}</h3>
+        <p>Thư mục làm việc của bạn trong {{ user.grade_level }}</p>
+
+        {% if grade_folder_url %}
+        <a href="{{ grade_folder_url }}" target="_blank" class="btn btn-primary">📂 Mở thư mục {{ user.grade_level }}</a>
+        {% else %}
+        <div class="empty-state">
+            <p>⚠️ Chưa liên kết thư mục cho khối này</p>
+            <p>Liên hệ Admin để cấu hình liên kết thư mục</p>
+        </div>
+        {% endif %}
+
+        <div class="folder-list">
+            <h4 style="margin:20px 0 10px 0; color:#202124;">👤 Thư mục cá nhân của tôi</h4>
+            <div class="folder-item folder-owner">
+                <span><strong>{{ user.full_name }}</strong> — Chủ sở hữu ✅</span>
+                {% if grade_folder_url %}
+                <a href="{{ grade_folder_url }}" target="_blank" class="btn btn-sm btn-secondary">Tìm & Mở</a>
+                {% endif %}
+            </div>
+
+            {% if viewable_list and viewable_list|length > 0 %}
+            <h4 style="margin:25px 0 10px 0; color:#202124;">👁 Thư mục bạn được xem</h4>
+            {% for u in viewable_list %}
+            <div class="folder-item">
+                <span>{{ u.full_name }} — Chỉ xem 👁</span>
+                {% if grade_folder_url %}
+                <a href="{{ grade_folder_url }}" target="_blank" class="btn btn-sm btn-secondary">Xem</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
     </div>
     {% endif %}
 
     <div class="card">
-        <h3>👤 Tài khoản của tôi</h3>
-        <ul>
-            <li><a href="{{ url_for('main.change_password') }}">🔐 Đổi mật khẩu</a></li>
-        </ul>
-    </div>
-
-    <div class="card">
-        <h3>📋 Chức năng chính</h3>
-        <ul>
-            <li>✅ Quản lý danh sách cán bộ/giáo viên</li>
-            <li>✅ Lưu trữ hồ sơ, bằng cấp, chứng chỉ</li>
-            <li>🔜 Tải tệp trực tiếp vào Google Drive</li>
-            <li>🔜 Tìm kiếm và xuất báo cáo</li>
-            <li>🔜 Phân quyền cho 50 người dùng</li>
-        </ul>
+        <h3>🔐 Tài khoản của tôi</h3>
+        <p>Quản lý thông tin và bảo mật tài khoản</p>
+        <a href="{{ url_for('main.change_password') }}" class="btn btn-secondary">🔑 Đổi mật khẩu</a>
     </div>
 </body>
 </html>
