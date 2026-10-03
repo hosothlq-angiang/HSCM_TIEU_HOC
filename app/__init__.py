@@ -29,7 +29,12 @@ def create_app():
     login_manager.init_app(app)
 
     with app.app_context():
+        # === XÓA BẢNG CŨ — CHẠY 1 LẦN RỒI XÓA DÒNG NÀY ĐI ===
+        db.drop_all()
+        # ==================================================
+
         db.create_all()
+        
         
         if not User.query.filter_by(username='admin').first():
             admin = User(
