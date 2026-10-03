@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 from app import db
 from app.models import User
 
@@ -32,7 +32,8 @@ def login():
 @login_required
 def dashboard():
     drive_link = f"https://drive.google.com/drive/folders/{DRIVE_FOLDER_ID}"
-    return render_template('dashboard.html', user=__user__, drive_link=drive_link)
+    # ✅ ĐÚNG: dùng current_user
+    return render_template('dashboard.html', user=current_user, drive_link=drive_link)
 
 @main_bp.route('/logout')
 @login_required
