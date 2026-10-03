@@ -8,15 +8,8 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
     
-    # Cấu hình
-    app.config['SECRET_KEY'] = os.environ.get(
-        "SECRET_KEY", 
-        "thay_khoa_bao_mat_an_toan_khi_chinh_thuc"
-    )
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-        "DATABASE_URL", 
-        "sqlite:////tmp/hoso.db"
-    )
+    app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", "dev-key-2026")
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:////tmp/hoso.db")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)
@@ -37,14 +30,14 @@ def create_app():
                     username='admin',
                     password_hash=generate_password_hash('Admin@123', method='pbkdf2:sha256'),
                     full_name='Quản trị viên Hệ thống',
-                    email='hoso.thlq@gmail.com',
+                    email='admin@hscm-tieu-hoc.local',
                     role='admin'
                 )
                 db.session.add(admin)
                 db.session.commit()
                 print("✅ Tạo tài khoản admin thành công")
             except Exception as e:
-                print(f"⚠️ Lỗi tạo admin: {e}")
+                print(f"Lỗi: {e}")
                 db.session.rollback()
 
     from app.routes import main_bp

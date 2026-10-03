@@ -8,7 +8,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
         body { background: linear-gradient(135deg, #4285f4, #34a853); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .container { background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); padding: 40px; max-width: 500px; width: 100%; text-align: center; }
-        .icon { font-size: 60px; margin-bottom: 20px; }
         h1 { color: #202124; font-size: 24px; margin-bottom: 10px; }
         .subtitle { color: #5f6368; margin-bottom: 30px; }
         .btn { display: block; width: 100%; padding: 14px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin: 10px 0; transition: 0.3s; }
@@ -21,12 +20,11 @@
 </head>
 <body>
     <div class="container">
-        <div class="icon">✅</div>
-        <h1>Hệ thống Quản lý Hồ sơ Chuyên môn</h1>
+        <h1>✅ Hệ thống Quản lý Hồ sơ Chuyên môn</h1>
         <p class="subtitle">Trực tuyến & Kết nối Google Drive</p>
         
         <a href="{{ url_for('main.login') }}" class="btn btn-primary">🔐 Đăng nhập Hệ thống</a>
-        <a href="https://drive.google.com/drive/folders/13hI5NX2UfQqINJNuXJFGPsUrvRXSzA7O" target="_blank" class="btn btn-drive">📁 Mở Thư mục Dữ liệu</a>
+        <a href="{{ drive_link }}" target="_blank" class="btn btn-drive">📁 Mở Thư mục Dữ liệu</a>
         
         <p class="status">Đã kết nối thành công!</p>
     </div>
