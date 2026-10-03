@@ -23,7 +23,7 @@
     <div class="header">
         <h1>📊 Trang Quản lý Hồ sơ</h1>
         <div>
-            <span class="user">Xin chào, <strong>{{ user.full_name }}</strong></span>
+            <span class="user">Xin chào, <strong>{{ user.full_name if user.full_name else user.username }}</strong></span>
             <a href="{{ url_for('main.logout') }}" class="btn btn-logout">Đăng xuất</a>
         </div>
     </div>
