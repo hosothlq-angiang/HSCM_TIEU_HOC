@@ -10,7 +10,7 @@ class User(UserMixin, db.Model):
     # Thông tin cá nhân
     full_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    phone = db.Column(db.String(20))
+    phone = db.Column(db.String(20))  # ✅ Cho phép để trống
     
     # Phân quyền & trạng thái
     role = db.Column(db.String(20), default='giaovien')  # admin / giaovien
