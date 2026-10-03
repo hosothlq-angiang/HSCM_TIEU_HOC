@@ -89,62 +89,70 @@ def change_password():
     return render_template('change_password.html', user=current_user)
 
 # ========== QUẢN LÝ NGƯỜI DÙNG — CHỈ ADMIN ==========
-@main_bp.route('/users')
+@main_bp.route('/manage-users')
 @login_required
 def manage_users():
     if not current_user.is_admin():
-        flash("❌ Bạn không có quyền truy cập trang này")
+        flash("Bạn không có quyền truy cập trang này", "error")
         return redirect(url_for('main.dashboard'))
     
-    users = User.query.all()
-    return render_template('manage_users.html', users=users, user=current_user)
+    users = User.query.order_by(
+        User.grade_level.asc(),
+        User.role_type.desc(),
+        User.full_name.asc()
+    ).all()
+    
+    return render_template('manage_users.html', users=users)
+
 
 # ========== TẠO TÀI KHOẢN GIÁO VIÊN ==========
-@main_bp.route('/users/create', methods=['GET', 'POST'])
+@main_bp.route('/create-user', methods=['GET', 'POST'])
 @login_required
 def create_user():
     if not current_user.is_admin():
-        flash("❌ Bạn không có quyền thực hiện hành động này")
+        flash("Bạn không có quyền truy cập trang này")
         return redirect(url_for('main.dashboard'))
     
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         full_name = request.form.get('full_name', '').strip()
+        staff_code = request.form.get('staff_code', '').strip()
+        class_room = request.form.get('class_room', '').strip()
+        grade_level = request.form.get('grade_level', '').strip()
+        role_type = request.form.get('role_type', 'giaovien').strip()
         email = request.form.get('email', '').strip()
         phone = request.form.get('phone', '').strip()
-        password = request.form.get('password', '')
-        
-        # Kiểm tra tên đăng nhập trùng
+        password = request.form.get('password', 'GiaoVien@123').strip()
+
         if User.query.filter_by(username=username).first():
-            flash("❌ Tên đăng nhập đã tồn tại")
+            flash("Tên đăng nhập đã tồn tại!")
             return redirect(url_for('main.create_user'))
         
-        # Kiểm tra email trùng
         if User.query.filter_by(email=email).first():
-            flash("❌ Email đã được sử dụng")
+            flash("Email đã được sử dụng!")
             return redirect(url_for('main.create_user'))
-        
-        # Tạo tài khoản mới
+
         new_user = User(
             username=username,
             full_name=full_name,
-            email=email,
-            phone=phone,
             staff_code=staff_code,
             class_room=class_room,
             grade_level=grade_level,
-            role_type=role_type,          # ✅ Đảm bảo dùng role_type
-            must_change_password=True  # Bắt buộc đổi mật khẩu lần đầu
+            role_type=role_type,
+            email=email,
+            phone=phone if phone else None,
+            must_change_password=True
         )
         new_user.set_password(password)
         
         db.session.add(new_user)
         db.session.commit()
         
-        flash(f"✅ Tạo tài khoản cho {full_name} thành công!")
+        flash(f"✅ Tạo tài khoản {full_name} thành công!")
         return redirect(url_for('main.manage_users'))
     
     return render_template('create_user.html')
+
 
 # ========== RESET MẬT KHẨU — CHỈ ADMIN ==========
 @main_bp.route('/users/<int:user_id>/reset-password', methods=['GET', 'POST'])

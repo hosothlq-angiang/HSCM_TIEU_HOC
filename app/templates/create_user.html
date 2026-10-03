@@ -3,57 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tạo tài khoản mới</title>
+    <title>Tạo tài khoản giáo viên</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-        body { background: #f8f9fa; padding: 30px; max-width: 500px; margin: 0 auto; }
-        h1 { color: #202124; margin-bottom: 25px; font-size: 20px; }
+        body { background: #f8f9fa; padding: 30px; max-width: 550px; margin: 0 auto; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        h2 { text-align: center; color: #202124; margin-bottom: 25px; }
         .form-group { margin-bottom: 18px; }
-        label { display: block; margin-bottom: 6px; font-weight: bold; color: #3c4043; font-size: 14px; }
-        input { width: 100%; padding: 11px 14px; border: 1px solid #dadce0; border-radius: 8px; font-size: 15px; }
-        input:focus { outline: none; border-color: #1a73e8; box-shadow: 0 0 0 2px rgba(26,115,232,0.2); }
-        button { width: 100%; padding: 12px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 8px; }
-        button:hover { background: #1557b0; }
-        .back-link { display: inline-block; margin-top: 18px; color: #5f6368; text-decoration: none; font-size: 14px; }
-        .flash { padding: 12px; border-radius: 8px; margin-bottom: 20px; }
-        .flash-error { background: #fce8e6; color: #d93025; border-left: 4px solid #d93025; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; color: #5f6368; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; }
+        input:focus, select:focus { outline: none; border-color: #1a73e8; box-shadow: 0 0 0 3px rgba(26,115,232,0.1); }
+        .btn { width: 100%; padding: 13px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-primary { background: #1a73e8; color: white; }
+        .btn-secondary { background: #e8eaed; color: #5f6368; margin-bottom: 15px; }
+        .required { color: #d93025; }
+        .hint { font-size: 12px; color: #888; margin-top: 4px; }
     </style>
 </head>
 <body>
-    <h1>➕ Tạo tài khoản giáo viên</h1>
+    <div class="card">
+        <h2>+ Tạo tài khoản giáo viên</h2>
+        
+        <form method="POST">
+            <div class="form-group">
+                <label for="username">Tên đăng nhập <span class="required">*</span></label>
+                <input type="text" id="username" name="username" required placeholder="vd: tranphandiemtrang">
+            </div>
 
-    {% with messages = get_flashed_messages(with_categories=false) %}
-    {% if messages %}
-        {% for msg in messages %}
-        <div class="flash flash-error">{{ msg }}</div>
-        {% endfor %}
-    {% endif %}
-    {% endwith %}
+            <div class="form-group">
+                <label for="full_name">Họ và tên <span class="required">*</span></label>
+                <input type="text" id="full_name" name="full_name" required placeholder="Điền đúng Họ tên trên Drive">
+            </div>
 
-    <form method="POST">
-        <div class="form-group">
-            <label for="username">Tên đăng nhập *</label>
-            <input type="text" id="username" name="username" required placeholder="vd: nguyenthib">
-        </div>
-        <div class="form-group">
-            <label for="full_name">Họ và tên *</label>
-            <input type="text" id="full_name" name="full_name" required placeholder="Nguyễn Thị B">
-        </div>
-        <div class="form-group">
-            <label for="email">Email *</label>
-            <input type="email" id="email" name="email" required placeholder="nguyenthib@gmail.com">
-        </div>
-        <div class="form-group">
-            <label for="phone">Số điện thoại</label>
-            <input type="text" id="phone" name="phone" placeholder="Tùy chọn">
-        </div>
-        <div class="form-group">
-            <label for="password">Mật khẩu ban đầu *</label>
-            <input type="password" id="password" name="password" required placeholder="Ít nhất 8 ký tự">
-        </div>
-        <button type="submit">Tạo tài khoản</button>
-    </form>
+            <div class="form-group">
+                <label for="staff_code">Mã GV</label>
+                <input type="text" id="staff_code" name="staff_code" placeholder="vd: GV1A, GV2B...">
+            </div>
 
-    <a href="{{ url_for('main.manage_users') }}" class="back-link">← Quay lại danh sách</a>
+            <div class="form-group">
+                <label for="class_room">Lớp</label>
+                <input type="text" id="class_room" name="class_room" placeholder="vd: 1A, 2B, GVC_TD1...">
+            </div>
+
+            <div class="form-group">
+                <label for="grade_level">Khối <span class="required">*</span></label>
+                <select id="grade_level" name="grade_level" required>
+                    <option value="">-- Chọn khối --</option>
+                    <option value="Khối 1">Khối 1</option>
+                    <option value="Khối 2">Khối 2</option>
+                    <option value="Khối 3">Khối 3</option>
+                    <option value="Khối 4">Khối 4</option>
+                    <option value="Khối 5">Khối 5</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="role_type">Vai trò <span class="required">*</span></label>
+                <select id="role_type" name="role_type" required>
+                    <option value="giaovien">Giáo viên</option>
+                    <option value="khoitruong">Khối trưởng</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="Email giáo viên">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Số điện thoại</label>
+                <input type="tel" id="phone" name="phone" placeholder="Tùy chọn">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mật khẩu ban đầu <span class="required">*</span></label>
+                <input type="text" id="password" name="password" required value="GiaoVien@123">
+                <p class="hint">Mặc định: GiaoVien@123 — Giáo viên đổi mật khẩu lần đầu đăng nhập</p>
+            </div>
+
+            <a href="{{ url_for('main.manage_users') }}" class="btn btn-secondary">← Quay lại danh sách</a>
+            <button type="submit" class="btn btn-primary">Tạo tài khoản</button>
+        </form>
+    </div>
 </body>
 </html>
