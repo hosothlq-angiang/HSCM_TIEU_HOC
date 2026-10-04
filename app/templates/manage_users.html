@@ -1,73 +1,112 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý tài khoản người dùng</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background: #f8f9fa; padding: 25px; max-width: 1200px; margin: 0 auto; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+        h2 { color: #202124; }
+        .btn { padding: 10px 18px; border-radius: 8px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; font-size: 14px; display: inline-block; margin: 2px; }
+        .btn-primary { background: #1a73e8; color: white; }
+        .btn-secondary { background: #e8eaed; color: #5f6368; }
+        .btn-warning { background: #fbbc04; color: #202124; }
+        .btn-sm { padding: 5px 10px; font-size: 13px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #e8eaed; font-size: 14px; }
+        th { background: #f8f9fa; font-weight: bold; color: #5f6368; white-space: nowrap; }
+        tr:hover { background: #f8f9fa; }
+        .tag { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; display: inline-block; }
+        .tag-admin { background: #e8f0fe; color: #1a73e8; }
+        .tag-giaovien { background: #e6f4ea; color: #137333; }
+        .tag-active { background: #e6f4ea; color: #137333; }
+        .tag-inactive { background: #f1f3f4; color: #5f6368; }
+        .tag-pending { background: #fef7e0; color: #f9ab00; }
+        .flash { padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; line-height: 1.6; }
+        .flash-success { background: #e6f4ea; color: #137333; border-left: 4px solid #137333; }
+        .flash-error { background: #fce8e6; color: #d93025; border-left: 4px solid #d93025; }
+        .empty { text-align: center; padding: 40px; color: #5f6368; }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <h2>👥 Quản lý tài khoản người dùng</h2>
+        <div>
+            <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">← Về Trang chính</a>
+            <a href="{{ url_for('main.create_user') }}" class="btn btn-primary">+ Tạo tài khoản mới</a>
+        </div>
+    </div>
 
-{% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">👥 Quản lý tài khoản người dùng</h2>
-    
-    <a href="{{ url_for('main.create_user') }}" class="btn btn-primary mb-3">➕ Tạo tài khoản giáo viên</a>
-    
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
+        {% if messages %}
+            {% for category, msg in messages %}
+                <div class="flash flash-{{ category }}">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
     {% endwith %}
 
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>Tên đăng nhập</th>
-                <th>Họ và tên</th>
-                <th>Email</th>
-                <th>Số điện thoại</th>
-                <th>Khối</th>
-                <th>Vai trò</th>
-                <th>Trạng thái</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-            <tr>
-                <td>{{ user.username }}</td>
-                <td>{{ user.full_name }}</td>
-                <td>{{ user.email or '-' }}</td>
-                <td>{{ user.phone or '-' }}</td>
-                <td>{{ user.grade_level if user.grade_level else '-' }}</td>
-                <td>
-                    {% if user.role_type == 'admin' %}
-                    <span class="badge bg-danger">Quản trị</span>
-                    {% else %}
-                    <span class="badge bg-info">Giáo viên</span>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if user.is_active %}
-                    <span class="text-success">✅ Hoạt động</span>
-                    {% else %}
-                    <span class="text-danger">❌ Khóa</span>
-                    {% endif %}
-                    {% if user.must_change_password %}
-                    <span class="badge bg-warning text-dark ms-1">Đổi MK lần đầu</span>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if user.role_type != 'admin' %}
-                    <a href="{{ url_for('main.edit_user', user_id=user.id) }}" class="btn btn-sm btn-outline-secondary">✏️ Sửa</a>
-                    <a href="{{ url_for('main.reset_password_token', user_id=user.id) }}" class="btn btn-sm btn-outline-warning" onclick="return confirm('Đặt lại mật khẩu cho {{ user.full_name }}?')">🔑 Reset MK</a>
-                    {% if user.is_active %}
-                    <a href="{{ url_for('main.toggle_user_active', user_id=user.id) }}" class="btn btn-sm btn-outline-danger">🔒 Khóa</a>
-                    {% else %}
-                    <a href="{{ url_for('main.toggle_user_active', user_id=user.id) }}" class="btn btn-sm btn-outline-success">🔓 Mở</a>
-                    {% endif %}
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    
-    <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary mt-3">← Quay lại trang chính</a>
-</div>
-{% endblock %}
+    <div class="card">
+        {% if users %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Tên đăng nhập</th>
+                    <th>Họ và tên</th>
+                    <th>Mã GV</th>
+                    <th>Khối</th>
+                    <th>Email</th>
+                    <th>Số điện thoại</th>
+                    <th>Vai trò</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td><strong>{{ u.username }}</strong></td>
+                    <td>{{ u.full_name }}</td>
+                    <td>{{ u.staff_code or '—' }}</td>
+                    <td>{{ u.grade_level or '—' }}</td>
+                    <td>{{ u.email }}</td>
+                    <td>{{ u.phone or '—' }}</td>
+                    <td>
+                        {% if u.role_type == 'admin' %}
+                            <span class="tag tag-admin">Quản trị</span>
+                        {% else %}
+                            <span class="tag tag-giaovien">Giáo viên</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if u.is_active %}
+                            <span class="tag tag-active">Hoạt động</span>
+                        {% else %}
+                            <span class="tag tag-inactive">Đã khóa</span>
+                        {% endif %}
+                        {% if u.must_change_password %}
+                            <span class="tag tag-pending ms-1">Đổi MK</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if u.role_type != 'admin' %}
+                        <a href="{{ url_for('main.reset_password_token', token=u.get_reset_token()) }}" 
+                           class="btn btn-sm btn-warning" 
+                           onclick="return confirm('Đặt lại mật khẩu cho {{ u.full_name }}?')">🔑 Reset MK</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">
+            <p>Chưa có tài khoản giáo viên nào.</p>
+            <p style="margin-top: 10px;"><a href="{{ url_for('main.create_user') }}" class="btn btn-primary">Tạo tài khoản đầu tiên</a></p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
