@@ -18,6 +18,14 @@ def create_app():
     
     db.init_app(app)
     login_manager.init_app(app)
+    
+    # ========== THIẾU DÒNG NÀY GÂY LỖI ==========
+    from app.models import User
+    
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+    
     login_manager.login_view = 'main.login'
     login_manager.login_message = "Vui lòng đăng nhập để tiếp tục"
     
@@ -29,7 +37,6 @@ def create_app():
     with app.app_context():
         db.create_all()
         
-        from app.models import User
         if not User.query.filter_by(username='admin').first():
             admin = User(
                 username='admin',
@@ -46,5 +53,3 @@ def create_app():
             db.session.commit()
     
     return app
-
-from app import models
