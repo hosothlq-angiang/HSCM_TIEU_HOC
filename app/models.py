@@ -1,8 +1,9 @@
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import URLSafeTimedSerializer
 from app import db
+from flask import current_app
 
-# Bảng phân quyền: Ai được xem thư mục của ai
 user_permission = db.Table(
     'user_permission',
     db.Column('viewer_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
@@ -14,20 +15,18 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
     
-    full_name = db.Column(db.String(100), nullable=False)   # Cột C: HoTen
+    full_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     phone = db.Column(db.String(20))
     
-    staff_code = db.Column(db.String(20))      # Cột B: MaGV
-    class_room = db.Column(db.String(20))      # Cột D: Lop
-    grade_level = db.Column(db.String(20))     # Cột A: Khối 1 → Khối 5
-    role_type = db.Column(db.String(20), default='giaovien')  # Cột E: KhoiTruong / GiaoVien
+    staff_code = db.Column(db.String(20))
+    class_room = db.Column(db.String(20))
+    grade_level = db.Column(db.String(20))
+    role_type = db.Column(db.String(20), default='giaovien')
     
-    drive_folder_id = db.Column(db.String(100)) # ID thư mục cá nhân (sẽ cập nhật sau)
     is_active = db.Column(db.Boolean, default=True)
-    must_change_password = db.Column(db.Boolean, default=True)
+    must_change_password = db.Column(db.Boolean, default=False)  # ❌ Không bắt buộc
 
-    # Danh sách người mà tôi được phép xem
     viewable_users = db.relationship(
         'User',
         secondary=user_permission,
@@ -47,23 +46,26 @@ class User(UserMixin, db.Model):
         return self.role_type == 'admin'
 
     def is_khoitruong(self):
-        return self.role_type == 'khoitruong' or self.role_type == 'KhoiTruong'
+        return self.role_type in ['khoitruong', 'KhoiTruong']
 
-    def get_grade_folder_name(self):
-        if self.grade_level:
-            return f"KHỐI {self.grade_level.replace('Khối ', '')}"
-        return None
+    def get_reset_token(self, expires_sec=3600):
+        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        return s.dumps(self.id, salt='reset-password-salt')
+
+    @staticmethod
+    def verify_reset_token(token):
+        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token, salt='reset-password-salt', max_age=3600)
+        except:
+            return None
+        return User.query.get(user_id)
 
     def can_view_user(self, target_user):
-        """QUYỀN XEM CHÍNH XÁC theo yêu cầu"""
-        # Admin xem tất cả
         if self.is_admin():
             return True
-        # Xem chính mình
         if self.id == target_user.id:
             return True
-        # Khối trưởng xem tất cả trong khối mình
         if self.is_khoitruong() and self.grade_level == target_user.grade_level:
             return True
-        # Được phân quyền xem riêng
         return self.viewable_users.filter(user_permission.c.owner_id == target_user.id).first() is not None

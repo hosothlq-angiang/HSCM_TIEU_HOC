@@ -22,23 +22,19 @@
         .btn-success { background: #137333; color: white; }
         .btn-secondary { background: #e8eaed; color: #5f6368; }
         .btn-sm { padding: 7px 14px; font-size: 14px; }
-        .folder-list { margin-top: 20px; }
-        .folder-item { padding: 14px 16px; background: #f1f3f4; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .folder-owner { border-left: 4px solid #137333; background: #e6f4ea; }
         .flash { padding: 14px 20px; border-radius: 8px; margin-bottom: 20px; line-height: 1.6; }
         .flash-info { background: #e8f0fe; color: #1a73e8; border-left: 4px solid #1a73e8; }
-        .flash-warning { background: #fef7e0; color: #f9ab00; border-left: 4px solid #f9ab00; }
+        .flash-success { background: #e6f4ea; color: #137333; border-left: 4px solid #137333; }
         .empty-state { padding: 25px; text-align: center; color: #5f6368; }
-        .empty-state p { margin: 8px 0; }
     </style>
 </head>
 <body>
     {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, msg in messages %}
-        <div class="flash flash-{{ category }}">{{ msg|safe }}</div>
-        {% endfor %}
-    {% endif %}
+        {% if messages %}
+            {% for category, msg in messages %}
+                <div class="flash flash-{{ category }}">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
     {% endwith %}
 
     <div class="top-bar">
@@ -76,31 +72,9 @@
         {% else %}
         <div class="empty-state">
             <p>⚠️ Chưa liên kết thư mục cho khối này</p>
-            <p>Liên hệ Admin để cấu hình liên kết thư mục</p>
+            <p>Liên hệ Admin để cấu hình</p>
         </div>
         {% endif %}
-
-        <div class="folder-list">
-            <h4 style="margin:20px 0 10px 0; color:#202124;">👤 Thư mục cá nhân của tôi</h4>
-            <div class="folder-item folder-owner">
-                <span><strong>{{ user.full_name }}</strong> — Chủ sở hữu ✅</span>
-                {% if grade_folder_url %}
-                <a href="{{ grade_folder_url }}" target="_blank" class="btn btn-sm btn-secondary">Tìm & Mở</a>
-                {% endif %}
-            </div>
-
-            {% if viewable_list and viewable_list|length > 0 %}
-            <h4 style="margin:25px 0 10px 0; color:#202124;">👁 Thư mục bạn được xem</h4>
-            {% for u in viewable_list %}
-            <div class="folder-item">
-                <span>{{ u.full_name }} — Chỉ xem 👁</span>
-                {% if grade_folder_url %}
-                <a href="{{ grade_folder_url }}" target="_blank" class="btn btn-sm btn-secondary">Xem</a>
-                {% endif %}
-            </div>
-            {% endfor %}
-            {% endif %}
-        </div>
     </div>
     {% endif %}
 

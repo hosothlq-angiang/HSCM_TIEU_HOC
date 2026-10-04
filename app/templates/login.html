@@ -3,143 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập - Hệ thống Quản lý Hồ sơ Chuyên môn</title>
+    <title>Đăng nhập — Hệ thống Quản lý Hồ sơ Chuyên môn</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+
         body {
-            background: linear-gradient(135deg, #e8f0fe 0%, #d2e3fc 100%);
+            background: linear-gradient(135deg, #1a73e8 0%, #0d66d0 100%);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             padding: 20px;
         }
-        .login-box {
-            background: white;
-            padding: 35px 30px;
+
+        .login-card {
+            background: #ffffff;
             border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
             width: 100%;
             max-width: 420px;
+            padding: 40px 32px;
         }
+
         .login-header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 32px;
         }
+
+        .login-header .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
         .login-header h1 {
             font-size: 22px;
             color: #202124;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
+
         .login-header p {
+            font-size: 14px;
+            color: #5f6368;
+        }
+
+        .flash-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .flash-success {
+            background: #e6f4ea;
+            color: #137333;
+            border-left: 4px solid #137333;
+        }
+
+        .flash-error {
+            background: #fce8e6;
+            color: #d93025;
+            border-left: 4px solid #d93025;
+        }
+
+        .flash-info {
+            background: #e8f0fe;
+            color: #1a73e8;
+            border-left: 4px solid #1a73e8;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
             color: #5f6368;
             font-size: 14px;
         }
-        .form-group {
-            margin-bottom: 18px;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            color: #3c4043;
-            font-size: 14px;
-        }
+
         .input-wrapper {
             position: relative;
         }
-        input {
+
+        .input-wrapper input {
             width: 100%;
-            padding: 12px 45px 12px 14px;
+            padding: 14px 16px;
             border: 1px solid #dadce0;
             border-radius: 8px;
             font-size: 15px;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
-        input:focus {
+
+        .input-wrapper input:focus {
             outline: none;
             border-color: #1a73e8;
-            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
         }
-        .toggle-pw {
+
+        .toggle-password {
             position: absolute;
             right: 12px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
-            font-size: 18px;
+            font-size: 20px;
             cursor: pointer;
+            padding: 4px 8px;
             color: #5f6368;
-            padding: 0;
         }
+
+        .toggle-password:hover {
+            color: #202124;
+        }
+
         .btn-login {
             width: 100%;
-            padding: 13px;
+            padding: 14px;
             background: #1a73e8;
-            color: white;
+            color: #ffffff;
             border: none;
             border-radius: 8px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 5px;
+            transition: background 0.2s ease;
+            margin-top: 8px;
         }
+
         .btn-login:hover {
             background: #1557b0;
         }
-        .flash {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 18px;
-            font-size: 14px;
-        }
-        .flash-error {
-            background: #fce8e6;
-            color: #d93025;
-            border-left: 4px solid #d93025;
-        }
+
         .forgot-link {
             text-align: center;
-            margin-top: 18px;
+            margin-top: 24px;
         }
+
         .forgot-link a {
             color: #1a73e8;
             text-decoration: none;
             font-size: 14px;
+            font-weight: 500;
         }
+
         .forgot-link a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="login-box">
+    <div class="login-card">
         <div class="login-header">
-            <h1>🔐 Hệ thống Đăng nhập</h1>
+            <div class="icon">🔐</div>
+            <h1>Hệ thống Đăng nhập</h1>
             <p>Quản lý Hồ sơ Chuyên môn — Tiểu học</p>
         </div>
 
-        {% with messages = get_flashed_messages(with_categories=false) %}
-        {% if messages %}
-            {% for msg in messages %}
-            <div class="flash flash-error">{{ msg }}</div>
-            {% endfor %}
-        {% endif %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
         {% endwith %}
 
-        <form method="POST">
+        <form method="POST" action="{{ url_for('main.login') }}">
             <div class="form-group">
                 <label for="username">Tên đăng nhập</label>
-                <input type="text" id="username" name="username" required placeholder="Nhập tên đăng nhập" autocomplete="username">
+                <div class="input-wrapper">
+                    <input type="text" id="username" name="username" required 
+                           placeholder="Nhập tên đăng nhập" autocomplete="username">
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="password">Mật khẩu</label>
                 <div class="input-wrapper">
-                    <input type="password" id="password" name="password" required placeholder="Nhập mật khẩu" autocomplete="current-password">
-                    <button type="button" class="toggle-pw" id="togglePw" aria-label="Hiện mật khẩu">👁️</button>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="Nhập mật khẩu" autocomplete="current-password">
+                    <button type="button" class="toggle-password" onclick="togglePassword()">👁️</button>
                 </div>
             </div>
 
@@ -152,20 +205,10 @@
     </div>
 
     <script>
-        const pwInput = document.getElementById('password');
-        const toggleBtn = document.getElementById('togglePw');
-        
-        toggleBtn.addEventListener('click', function() {
-            if (pwInput.type === 'password') {
-                pwInput.type = 'text';
-                toggleBtn.textContent = '🙈';
-                toggleBtn.setAttribute('aria-label', 'Ẩn mật khẩu');
-            } else {
-                pwInput.type = 'password';
-                toggleBtn.textContent = '👁️';
-                toggleBtn.setAttribute('aria-label', 'Hiện mật khẩu');
-            }
-        });
+        function togglePassword() {
+            const pwd = document.getElementById('password');
+            pwd.type = pwd.type === 'password' ? 'text' : 'password';
+        }
     </script>
 </body>
 </html>
