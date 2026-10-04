@@ -17,7 +17,7 @@ def check_password_rule(password):
         return False, "Mật khẩu phải chứa ký tự @ hoặc #"
     return True, "OK"
 
-# ========== TRANG CHÍNH ==========
+# ========== TRANG CHÍNH / BẢNG ĐIỀU KHIỂN ==========
 @main_bp.route('/')
 def index():
     if current_user.is_authenticated:
@@ -29,12 +29,20 @@ def index():
 def dashboard():
     # Thông báo gợi ý đổi mật khẩu — KHÔNG BẮT BUỘC
     if current_user.must_change_password:
-        flash("💡 Gợi ý: Đổi mật khẩu để bảo mật hơn → Tài khoản vẫn hoạt động bình thường nếu không đổi", "info")
+        flash("💡 Gợi ý: Đổi mật khẩu để bảo mật hơn → Tài khoản vẫn hoạt động bình thường", "info")
     
+    # Link thư mục theo quyền
     grade_folder_url = None
-    if current_user.grade_level:
-        grade_folder_url = config.DRIVE_GRADE_FOLDERS.get(current_user.grade_level)
+    if current_user.is_admin():
+        # Admin thấy thư mục gốc toàn trường
+        root_url = config.DRIVE_ROOT_URL
+    else:
+        root_url = None
+        # Giáo viên/Khối trưởng thấy thư mục khối
+        if current_user.grade_level and current_user.grade_level in config.DRIVE_GRADE_FOLDERS:
+            grade_folder_url = config.DRIVE_GRADE_FOLDERS[current_user.grade_level]
     
+    # Danh sách người dùng có quyền xem
     viewable_list = []
     if current_user.is_admin():
         all_users = User.query.order_by(User.grade_level.asc(), User.full_name.asc()).all()
@@ -46,8 +54,12 @@ def dashboard():
         else:
             viewable_list = [u for u in same_grade if u.id != current_user.id and current_user.can_view_user(u)]
     
-    return render_template('dashboard.html', user=current_user, config=config,
-                           grade_folder_url=grade_folder_url, viewable_list=viewable_list)
+    return render_template('dashboard.html', 
+                           user=current_user,
+                           config=config,
+                           root_url=root_url,
+                           grade_folder_url=grade_folder_url,
+                           viewable_list=viewable_list)
 
 # ========== ĐĂNG NHẬP / ĐĂNG XUẤT ==========
 @main_bp.route('/login', methods=['GET', 'POST'])
@@ -79,7 +91,7 @@ def logout():
     flash("Đăng xuất thành công", "info")
     return redirect(url_for('main.login'))
 
-# ========== ĐỔI MẬT KHẨU ==========
+# ========== ĐỔI MẬT KHẨU — ĐÃ SỬA HOẠT ĐỘNG ==========
 @main_bp.route('/change-password', methods=['GET', 'POST'])
 @login_required
 def change_password():
@@ -88,28 +100,33 @@ def change_password():
         new_pass = request.form.get('new_password', '')
         confirm_pass = request.form.get('confirm_password', '')
         
+        # Kiểm tra mật khẩu cũ đúng
         if not current_user.check_password(old_pass):
-            flash("Mật khẩu cũ không đúng", "error")
+            flash("❌ Mật khẩu cũ không đúng", "error")
             return redirect(url_for('main.change_password'))
         
+        # Kiểm tra khớp mật khẩu mới
         if new_pass != confirm_pass:
-            flash("Mật khẩu mới không khớp", "error")
+            flash("❌ Mật khẩu xác nhận không khớp", "error")
             return redirect(url_for('main.change_password'))
         
+        # Kiểm tra quy tắc có @ hoặc #
         valid, msg = check_password_rule(new_pass)
         if not valid:
-            flash(msg, "error")
+            flash(f"❌ {msg}", "error")
             return redirect(url_for('main.change_password'))
         
+        # Lưu mật khẩu mới
         current_user.set_password(new_pass)
         current_user.must_change_password = False
         db.session.commit()
+        
         flash("✅ Đổi mật khẩu thành công!", "success")
         return redirect(url_for('main.dashboard'))
     
     return render_template('change_password.html')
 
-# ========== QUÊN MẬT KHẨU — GỬI GMAIL HOẶC SMS ==========
+# ========== QUÊN MẬT KHẨU ==========
 @main_bp.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if current_user.is_authenticated:
@@ -130,8 +147,9 @@ def forgot_password():
             reset_url = url_for('main.reset_password_token', token=token, _external=True)
             
             if method == 'email' and user.email:
-                msg = Message('Đặt lại mật khẩu — Hệ thống Quản lý Hồ sơ', recipients=[user.email])
-                msg.body = f"""Xin chào {user.full_name},
+                try:
+                    msg = Message('Đặt lại mật khẩu — Hệ thống Quản lý Hồ sơ', recipients=[user.email])
+                    msg.body = f"""Xin chào {user.full_name},
 
 Bạn yêu cầu đặt lại mật khẩu tài khoản. Nhấn liên kết dưới đây để đặt mật khẩu mới:
 
@@ -142,15 +160,14 @@ Liên kết có hiệu lực trong 1 giờ. Nếu không phải bạn, vui lòng
 Trân trọng,
 Quản trị viên
 """
-                try:
                     mail.send(msg)
-                    flash(f"✅ Đã gửi hướng dẫn đặt lại mật khẩu đến Gmail: {user.email}", "success")
+                    flash(f"✅ Đã gửi hướng dẫn đến: {user.email}", "success")
                 except Exception as e:
-                    flash("⚠️ Không thể gửi mail. Vui lòng thử lại hoặc liên hệ Admin", "warning")
+                    flash("⚠️ Không thể gửi mail. Liên hệ Admin đặt lại trực tiếp", "warning")
             elif method == 'phone' and user.phone:
-                flash(f"✅ Yêu cầu đã nhận! Liên hệ Admin để nhận mật khẩu mới qua số: {user.phone}", "success")
+                flash(f"✅ Yêu cầu đã nhận! Liên hệ Admin cấp mật khẩu mới qua: {user.phone}", "success")
             else:
-                flash("Thông tin liên hệ không khớp với phương thức chọn", "error")
+                flash("Thông tin không khớp với phương thức chọn", "error")
         else:
             flash("Nếu thông tin khớp, chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu", "info")
         
@@ -173,12 +190,12 @@ def reset_password_token(token):
         confirm_pass = request.form.get('confirm_password', '')
         
         if new_pass != confirm_pass:
-            flash("Mật khẩu không khớp", "error")
+            flash("❌ Mật khẩu không khớp", "error")
             return redirect(url_for('main.reset_password_token', token=token))
         
         valid, msg = check_password_rule(new_pass)
         if not valid:
-            flash(msg, "error")
+            flash(f"❌ {msg}", "error")
             return redirect(url_for('main.reset_password_token', token=token))
         
         user.set_password(new_pass)
@@ -224,15 +241,15 @@ def create_user():
         password = request.form.get('password', 'Giaovien@123').strip()
         
         if User.query.filter_by(username=username).first():
-            flash("Tên đăng nhập đã tồn tại! Chọn tên khác", "error")
+            flash("❌ Tên đăng nhập đã tồn tại! Chọn tên khác", "error")
             return redirect(url_for('main.create_user'))
         if User.query.filter_by(email=email).first():
-            flash("Email đã được sử dụng", "error")
+            flash("❌ Email đã được sử dụng", "error")
             return redirect(url_for('main.create_user'))
         
         valid, msg = check_password_rule(password)
         if not valid:
-            flash(msg, "error")
+            flash(f"❌ {msg}", "error")
             return redirect(url_for('main.create_user'))
         
         new_user = User(
@@ -244,7 +261,7 @@ def create_user():
             role_type=role_type,
             email=email,
             phone=phone,
-            must_change_password=False  # ❌ Không bắt buộc đổi
+            must_change_password=False  # Không bắt buộc đổi
         )
         new_user.set_password(password)
         db.session.add(new_user)
@@ -253,27 +270,3 @@ def create_user():
         return redirect(url_for('main.manage_users'))
     
     return render_template('create_user.html')
-
-@main_bp.route('/reset-user-pass/<int:user_id>', methods=['POST'])
-@login_required
-def reset_user_pass(user_id):
-    if not current_user.is_admin():
-        flash("Không có quyền thực hiện", "error")
-        return redirect(url_for('main.dashboard'))
-    
-    user = User.query.get_or_404(user_id)
-    if user.is_admin():
-        flash("Không thể reset tài khoản quản trị", "error")
-        return redirect(url_for('main.manage_users'))
-    
-    new_pass = request.form.get('new_pass', 'Giaovien@123')
-    valid, msg = check_password_rule(new_pass)
-    if not valid:
-        flash(msg, "error")
-        return redirect(url_for('main.manage_users'))
-    
-    user.set_password(new_pass)
-    user.must_change_password = False
-    db.session.commit()
-    flash(f"✅ Đặt lại mật khẩu cho {user.full_name}: {new_pass}", "success")
-    return redirect(url_for('main.manage_users'))

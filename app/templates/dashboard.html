@@ -21,7 +21,6 @@
         .btn-primary { background: #1a73e8; color: white; }
         .btn-success { background: #137333; color: white; }
         .btn-secondary { background: #e8eaed; color: #5f6368; }
-        .btn-sm { padding: 7px 14px; font-size: 14px; }
         .flash { padding: 14px 20px; border-radius: 8px; margin-bottom: 20px; line-height: 1.6; }
         .flash-info { background: #e8f0fe; color: #1a73e8; border-left: 4px solid #1a73e8; }
         .flash-success { background: #e6f4ea; color: #137333; border-left: 4px solid #137333; }
@@ -49,7 +48,7 @@
     </div>
 
     {% if user.is_admin() %}
-    <!-- ========== ADMIN ========== -->
+    <!-- ========== ADMIN — Thư mục gốc toàn trường ========== -->
     <div class="card">
         <h3>📁 Thư mục Dữ liệu — Toàn trường</h3>
         <p>Quản lý tất cả khối và giáo viên trong trường</p>
@@ -62,7 +61,7 @@
         <a href="{{ url_for('main.manage_users') }}" class="btn btn-secondary">👥 Quản lý tài khoản người dùng</a>
     </div>
     {% else %}
-    <!-- ========== GIÁO VIÊN / KHỐI TRƯỞNG ========== -->
+    <!-- ========== GIÁO VIÊN / KHỐI TRƯỞNG — Thư mục khối ========== -->
     <div class="card">
         <h3>📁 Thư mục Dữ liệu — {{ user.grade_level or 'Chưa phân khối' }}</h3>
         <p>Thư mục làm việc của bạn trong {{ user.grade_level }}</p>
